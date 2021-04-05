@@ -41,6 +41,14 @@ by the number of lambdas between this occurrence and the lambda binding the vari
 indices, i.e., the last example must can be translated into the input language of this 
 interpreter as \ <1> (\ <1> <11>)).
 
+## Usage
+
+The script read a source program from the standard input. So, you can use the script this way:
+
+```bash
+echo '(\x x) y' | ./beta-reducer.sed
+```
+
 ## Additional information and references
 
 Learn more at http://en.wikipedia.org/wiki/lambda_calculus

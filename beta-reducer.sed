@@ -5,6 +5,8 @@
 # In fact, it's an interpreter of a small programming language --- the lambda calculus
 # (save the fact that it currently only support one step of the beta-reduction).
 
+# Usage: echo '<lambda_expression>' | ./beta_reducer.sed
+
 # (C) By Circiter (mailto:xcirciter@gmail.com).
 # Permanent storage: https://github.com/Circiter/beta-reducer-in-sed
 # License: MIT.
@@ -34,6 +36,11 @@
 # a free variable.
 
 # TODO: Add support for custom definitions (like "true = \x\y x").
+
+# TODO: Complete the "parenthesis minification" logic; e.g. the
+# expression "(\x x) y" now reduces to (y<>), which contains an
+# extra pair of parenthesis. Note, however, that just another
+# execution of the beta-reducer will clean up such an expression.
 
 # Beta-reduction: (\x A) y -> A[x=y]
 
@@ -240,10 +247,6 @@ s/$/\n/; babstraction # Entry rule is abstraction.
         s/@\n([a-z_]*)[^<a-z_].*$/\1!1!/ # Insert a new de Bruijn index.
         s/^(.*)@\n([a-z_]*)(<1*>).*$/\3\1\2\3/ # Save the de Bruijn index.
 
-        # NB., If an identifier is provided then use it (ignoring a de Bruijn index, if any).
-        # FIXME: After the first beta-reduction the identifiers may be wrong so is it better
-        # to use a de Bruijn indices by default?
-
         # Search the variable name in the variables stack.
         s/begin_variables\n/&@/ # Select TOS.
         :search
@@ -261,7 +264,10 @@ s/$/\n/; babstraction # Entry rule is abstraction.
                 bend_search
             }
 
-            # NB, de Bruijn index has higher priority.
+            # NB, de Bruijn index has higher priority; for if an identifier
+            # is provided then use it (ignoring a de Bruijn index, if any).
+            # After the first beta-reduction the identifiers may be wrong so
+            # it's better to use a de Bruijn indices by default.
 
             # Compare by the de Bruijn index.
 
