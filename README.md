@@ -9,7 +9,7 @@ Turing-complete) functional programming language.
 ## Syntax
 
 The input language imitates the standard lambda-calculus notation but replaces the Greek lambda 
-with easy-to-type symbol `\\` (backslash) and omits a dots in lambda definitions. E.g. the 
+with easy-to-type symbol `\` (backslash) and omits a dots in lambda definitions. E.g. the 
 identity function in such a modified notation can be defined as `\x x`.
 
 ## Features

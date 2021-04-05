@@ -37,10 +37,15 @@
 
 # TODO: Add support for custom definitions (like "true = \x\y x").
 
+# There is a special "echo"-mode, inhibiting the substitution stage.
+# Such a mode can be invoked simply by appending the , (comma) at the end
+# of a source lambda-expression.
+
 # TODO: Complete the "parenthesis minification" logic; e.g. the
 # expression "(\x x) y" now reduces to (y<>), which contains an
-# extra pair of parenthesis. Note, however, that just another
-# execution of the beta-reducer will clean up such an expression.
+# extra pair of parenthesis. Note, however, that another
+# execution of the beta-reducer in the echo-mode
+# will clean up such an expression.
 
 # Beta-reduction: (\x A) y -> A[x=y]
 
@@ -53,7 +58,7 @@
 # Convert all the whitespace characters into ordinary spaces.
 y/\n\t/  /
 
-s/$/$/ # Add a sentinel.
+s/([^,])(,*) *$/\1$\2/ # Add a sentinel.
 
 x
 s/$/\nkind=;\n/
@@ -62,7 +67,7 @@ s/$/begin_to_close\nend_to_close\n/ # Stack of closing parenthesis insertions.
 s/$/begin_variables\nend_variables\n/ # Stack of variables.
 x
 
-s/$/\n/; babstraction # Entry rule is abstraction.
+babstraction # Entry rule is abstraction.
 
 # If a de Bruijn indices are present then use them instead
 # of string identifiers.
@@ -302,13 +307,23 @@ s/$/\n/; babstraction # Entry rule is abstraction.
     bend
 
 :end
-s/^.*$//
+#s/^.*$//
 x
 
 # Remove all the content except the lambda-expression itself.
 s/^.*\n([^\n]*)$/\1/
 
 # Perform substitution.
+x
+/, *$/ { # Skip the substitution if we are in the echo-mode.
+    x
+    # Remove any auxiliary markings.
+    s/ begin_argument(.*) end_argument/\1/
+    s/\[(.*);/\1/
+    s/\*//g
+    bafter_substitution
+}
+x
 
 # Replace all the marked variables (<var_name>*) by the
 # argument between "begin_argument" and "end_argument",
@@ -322,6 +337,7 @@ s/ begin_argument.* end_argument// # Remove the [actual] argument.
 # Extract the body of the marked lambda abstraction.
 s/ \\ *[a-z_]* *\[(.*);/\1/
 
+:after_substitution
 # Remove excessive spaces.
 s/^[ \n]*([^ \n])/\1/; s/([^ ]) *$/\1/
 :space
