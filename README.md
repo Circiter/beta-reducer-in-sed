@@ -12,12 +12,19 @@ The input language imitates the standard lambda-calculus notation but replaces t
 with easy-to-type symbol `\` (backslash) and omits a dots in lambda definitions. E.g. the 
 identity function in such a modified notation can be defined as `\x x`.
 
-## Features
+A custom definitions (e.g., true = \x\y x) and comments (any text after `--` and upto the end 
+of the same line is ignored) are supported only via the additional sed-script 
+`preprocessor.sed`.
+
+There is also a support for the de Bruijn indices, which can be [optionally] placed in angle 
+brackets after an identifiers (see below for a little bit more details).
+
+## Features and limitations
 
 Although it performs only single beta-reduction, in theory you can call this script repeatedly 
 until it approaches a fixed point (or even modify the script so that it will loop until the 
 stabilization). See, for example, the shell-script `full-reduction.sh` and try something like 
-`./full-reduction "(\w\x x w) y"`.
+`echo "(\w\x x w) y" | ./full-reduction.sh -`.
 
 N.B., this work focuses on the pure untyped lambda calculus with the "call by need" reduction strategy.
 
@@ -29,18 +36,21 @@ E.g., `id(id(\z id z)) -> id (\z id z) -> \z id z`, where `id = \x x`.
 In "normal evaluation" the expressions are always passed as parameters without any attempt to 
 reduce them; the reduction takes place later, as needed.
 
-In "lazy evaluation" we track repetitions of a parameter; when we reduce one we track all others. 
-This allows each parameter to be computed once at maximum (or even never at all). The lazy 
-evaluation arrives at its conclusion with the fewest reductions. So, it would be nice to 
-implement the lazy evaluation but currently this script uses the "call by name" stratedy as more 
-simple one to implement.
+In "lazy evaluation" we need to track repetitions of a parameter; when we reduce one we track 
+all others. This allows each parameter to be computed once at maximum (or even never at all). 
+The lazy evaluation arrives at its conclusion with the fewest reductions. So, it would be nice 
+to implement the lazy evaluation but currently this script uses the "call by name" stratedy as 
+more simple one to implement.
 
 Additionally, the script supports a de Bruijn indices (one-based unary numbers in an optional 
 angle brackets after an identifier). In de Bruijn notation, a variable occurence is represented 
-by the number of lambdas between this occurrence and the lambda binding the variable. E.g., \x.x 
-(\y.y x) is written in de Bruijn's notation as \0 (\0 1). Note, that this script uses one-based 
-indices, i.e., the last example must can be translated into the input language of this 
-interpreter as \ <1> (\ <1> <11>)).
+by the number of lambdas between this occurrence and the lambda binding the variable. E.g., 
+`\x.x (\y.y x)` is written in de Bruijn's notation as `\0 (\0 1)`. Note, that this script uses 
+one-based indices, i.e., the last example must can be translated into the input language of 
+this interpreter as `\ <1> (\ <1> <11>))`.
+
+There is no any IO -- a source program itself is the input and its transformed version is the 
+output.
 
 ## Usage
 
@@ -57,6 +67,19 @@ indices and with unneeded parenthesis removed. E.g.:
 ```bash
 echo '(\x x) y,' | ./beta-reducer.sed`
 ```
+
+To process a macro-definitions and remove comments it's possible to filter an extended 
+lambda-script with such a features through the sed-script `preprocessor.sed` like this:
+
+```bash
+cat some-extended-script.lambda | ./preprocessor.sed | ./beta-reducer.sed
+```
+
+# Bugs and design issues
+
+Beware that it's a quite inefficient to run a lambda-programs this way -- at each step it 
+performs a complete reparsing of a given expression instead of manipulating an abstract syntax 
+tree created only once.
 
 ## Additional information and references
 

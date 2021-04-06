@@ -35,17 +35,10 @@
 # indices, allowing the usage of empty angle brackets to denote
 # a free variable.
 
-# TODO: Add support for custom definitions (like "true = \x\y x").
-
 # There is a special "echo"-mode, inhibiting the substitution stage.
 # Such a mode can be invoked simply by appending the , (comma) at the end
-# of a source lambda-expression.
-
-# TODO: Complete the "parenthesis minification" logic; e.g. the
-# expression "(\x x) y" now reduces to (y<>), which contains an
-# extra pair of parenthesis. Note, however, that another
-# execution of the beta-reducer in the echo-mode
-# will clean up such an expression.
+# of a source lambda-expression, and can be used to clean up
+# an expression from an unneeded parenthesis.
 
 # Beta-reduction: (\x A) y -> A[x=y]
 
