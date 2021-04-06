@@ -307,29 +307,36 @@ babstraction # Entry rule is abstraction.
     bend
 
 :end
-#s/^.*$//
 x
 
 # Remove all the content except the lambda-expression itself.
 s/^.*\n([^\n]*)$/\1/
 
-# Perform substitution.
+# Skip the substitution if we are in the echo-mode or
+# if there is no arguments at all.
 x
-/, *$/ { # Skip the substitution if we are in the echo-mode.
+/, *$/ bskip_substitution
+x
+/ begin_argument.* end_argument/! {x; bskip_substitution}
+x
+bperform_substitution
+
+:skip_substitution
     x
     # Remove any auxiliary markings.
     s/ begin_argument(.*) end_argument/\1/
     s/\[(.*);/\1/
     s/\*//g
     bafter_substitution
-}
+
+:perform_substitution
 x
 
 # Replace all the marked variables (<var_name>*) by the
 # argument between "begin_argument" and "end_argument",
 # then remove the argument.
 :substitute
-    s/ [a-z_]*\*<1*>(.* begin_argument)(.*)( end_argument)/ \2\1\2\3/ # FIXME.
+    s/ [a-z_]*\*<1*>(.* begin_argument)(.*)( end_argument)/ \2\1\2\3/
     / [a-z_]*\*/ bsubstitute
 
 s/ begin_argument.* end_argument// # Remove the [actual] argument.

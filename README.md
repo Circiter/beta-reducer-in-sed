@@ -16,7 +16,8 @@ identity function in such a modified notation can be defined as `\x x`.
 
 Although it performs only single beta-reduction, in theory you can call this script repeatedly 
 until it approaches a fixed point (or even modify the script so that it will loop until the 
-stabilization).
+stabilization). See, for example, the shell-script `full-reduction.sh` and try something like 
+`./full-reduction "(\w\x x w) y"`.
 
 N.B., this work focuses on the pure untyped lambda calculus with the "call by need" reduction strategy.
 
@@ -47,6 +48,14 @@ The script read a source program from the standard input. So, you can use the sc
 
 ```bash
 echo '(\x x) y' | ./beta-reducer.sed
+```
+
+If you place a comma symbol right at the end of input then the script will act as an 
+"echo"-command, printing its input expression "prettified", that is annotated with de Bruijn 
+indices and with unneeded parenthesis removed. E.g.:
+
+```bash
+echo '(\x x) y,' | ./beta-reducer.sed`
 ```
 
 ## Additional information and references
