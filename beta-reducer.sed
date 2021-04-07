@@ -250,32 +250,38 @@ babstraction # Entry rule is abstraction.
         :search
             /@end_variables/ {
                 s/!1*!$/!!/ # Not found.
+                #i not found:
+                #p
                 bend_search
             }
 
             # Compare (by the string identifier).
 
-            /@([^\n]*)\n.*\1!1*!$/ bend_search # Found and unmarked.
+            /@([^\n]*)\n.*\1!1*!$/ {
+                bend_search # Found and unmarked.
+            }
 
             /@([^=\n]*)=.*\1!1*!$/ { # Found and marked.
                 s/ ([a-z_]*)(!1*!)$/ \1*\2/ # Mark this term as well.
                 bend_search
             }
 
-            # NB, de Bruijn index has higher priority; for if an identifier
+            # NB, de Bruijn index has higher priority; if an identifier
             # is provided then use it (ignoring a de Bruijn index, if any).
-            # After the first beta-reduction the identifiers may be wrong so
-            # it's better to use a de Bruijn indices by default.
+            # For after the first beta-reduction the identifiers may be
+            # wrong, so it's better to use a de Bruijn indices by default.
 
             # Compare by the de Bruijn index.
 
-            /^<1>.*@[^\n]*\n$/ bend_search # Found and unmarked.
+            /^<1>.*@[^\n]*\n/ {
+                bend_search # Found and unmarked.
+            }
             /^<1>.*@[^=\n]*=/ { # Found and marked.
                 s/ ([a-z_]*)(<1*>)$/ \1*\2/
                 bend_search
             }
 
-            s/^<11/<1/ #s/^<(1*)1>/<\1>/ # Decrement the value of the saved index.
+            s/^<11/<1/ # Decrement the value of the saved index.
             s/!(1*)!$/!\11!/ # Increment the de Bruijn index.
             s/@([^\n]*\n)/\1@/ # Select next item.
             bsearch
