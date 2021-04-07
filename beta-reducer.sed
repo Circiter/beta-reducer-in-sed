@@ -273,7 +273,7 @@ babstraction # Entry rule is abstraction.
 
             # Compare by the de Bruijn index.
 
-            /^<1>.*@[^\n]*\n/ {
+            /^<1>.*@[^=\n]*\n/ {
                 bend_search # Found and unmarked.
             }
             /^<1>.*@[^=\n]*=/ { # Found and marked.
