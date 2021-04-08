@@ -26,28 +26,32 @@ until it approaches a fixed point (or even modify the script so that it will loo
 stabilization). See, for example, the shell-script `full-reduction.sh` and try something like 
 `echo "(\w\x x w) y" | ./full-reduction.sh -`.
 
-N.B., this work focuses on the pure untyped lambda calculus with the "call by need" reduction strategy.
+N.B., this work focuses on the pure untyped lambda calculus with the "call by name" reduction 
+strategy (in fact, the script uses a more straightforward strategy -- namely "call by 
+macro expansion" in which we perform direct textual substitution).
 
 The call by name reduction chooses the leftmost, outermost redex, but never reduces inside 
 abstractions.
 
 E.g., `id(id(\z id z)) -> id (\z id z) -> \z id z`, where `id = \x x`.
 
-In "normal evaluation" the expressions are always passed as parameters without any attempt to 
-reduce them; the reduction takes place later, as needed.
+In "call by name" the expressions are always passed as parameters without any attempt to 
+reduce them; the reduction takes place later, if neccessary.
 
-In "lazy evaluation" we need to track repetitions of a parameter; when we reduce one we track 
-all others. This allows each parameter to be computed once at maximum (or even never at all). 
-The lazy evaluation arrives at its conclusion with the fewest reductions. So, it would be nice 
-to implement the lazy evaluation but currently this script uses the "call by name" stratedy as 
-more simple one to implement.
+In "lazy evaluation" (a variant of "call by need" strategy), we need to track repetitions of a 
+parameter (enveloping it in a so called "thunk"); when we reduce one we track all others. This 
+allows each parameter to be computed only once at maximum (or even never at all). The lazy 
+evaluation arrives at its conclusion with the fewest reductions. So, it would be nice to 
+implement the lazy evaluation but currently this script uses the "call by name" stratedy as more 
+simple one to implement (for how to store a thunks across the script invocations?).
 
 Additionally, the script supports a de Bruijn indices (one-based unary numbers in an optional 
 angle brackets after an identifier). In de Bruijn notation, a variable occurence is represented 
 by the number of lambdas between this occurrence and the lambda binding the variable. E.g., 
 `\x.x (\y.y x)` is written in de Bruijn's notation as `\0 (\0 1)`. Note, that this script uses 
 one-based indices, i.e., the last example must can be translated into the input language of 
-this interpreter as `\ <1> (\ <1> <11>))`.
+this interpreter as `\ <1> (\ <1> <11>))`. In this sed-script the de Bruijn notation is vital 
+because of its capture-avoiding properties.
 
 There is no any IO -- a source program itself is the input and its transformed version is the 
 output.
