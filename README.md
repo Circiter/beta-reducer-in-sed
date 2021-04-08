@@ -23,8 +23,8 @@ brackets after an identifiers (see below for a little bit more details).
 
 Although it performs only single beta-reduction, in theory you can call this script repeatedly 
 until it approaches a fixed point (or even modify the script so that it will loop until the 
-stabilization). See, for example, the shell-script `full-reduction.sh` and try something like 
-`echo "(\w\x x w) y" | ./full-reduction.sh -`.
+stabilization). See, for example, the shell-script `eval.sh` and try something like 
+`echo "(\w\x x w) y" | ./eval.sh -`.
 
 N.B., this work focuses on the pure untyped lambda calculus with the "call by name" reduction 
 strategy (in fact, the script uses a more straightforward strategy -- namely "call by 

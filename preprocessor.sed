@@ -1,8 +1,5 @@
 #!/bin/sed -Enf
 
-# (C) By Circiter (mailto:xcirciter@gmail.com).
-# License: MIT.
-
 :read $!{N; bread}
 
 /\n$/! s/$/\n/
@@ -20,7 +17,7 @@
 
     s/^[^\n]*\n/&$/
     :replace
-        s/^([_a-zA-Z]*) *= *([^\n]*)(\n.*[^_a-zA-Z])\1([^_a-zA-Z])/\1=\2\3\2\4/
+        s/^([_a-zA-Z]*) *= *([^\n]*)(\n.*[^_a-zA-Z])\1([^_a-zA-Z])/\1=\2\3(\2)\4/
         /^([_a-zA-Z]*) *= *[^\n]*\n.*[^_a-zA-Z]\1[^_a-zA-Z]/ breplace
 
     s/^[^\n]*\n\$//

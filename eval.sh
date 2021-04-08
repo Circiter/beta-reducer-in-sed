@@ -14,8 +14,8 @@ for i in $@; do
 done
 
 if [ "x$filename" = x ]; then
-    echo 'Usage: ./full-reduction.sh [--verbose] <program_filename>'
-    echo '       echo <expression> | ./full-reduction.sh [--verbose] -'
+    echo "Usage: $0 [--verbose] <program_filename>"
+    echo "       echo <expression> | $0 [--verbose] -"
     exit
 fi
 
